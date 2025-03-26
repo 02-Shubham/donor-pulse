@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
@@ -22,8 +21,9 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/context/AuthContext";
 import { useNavigate } from "react-router-dom";
+import { MapPin, Navigation } from "lucide-react";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 
-// Type definitions
 type BloodRequest = {
   id: string;
   bloodType: string;
@@ -32,6 +32,10 @@ type BloodRequest = {
   urgency: "normal" | "urgent" | "emergency";
   date: string;
   location: string;
+  coordinates?: {
+    lat: number;
+    lng: number;
+  };
 };
 
 type DonationHistory = {
@@ -54,9 +58,12 @@ type HospitalType = {
   id: string;
   name: string;
   location: string;
+  coordinates: {
+    lat: number;
+    lng: number;
+  };
 };
 
-// Sample data
 const sampleRequests: BloodRequest[] = [
   {
     id: "req-001",
@@ -66,6 +73,7 @@ const sampleRequests: BloodRequest[] = [
     urgency: "urgent",
     date: "2024-03-15",
     location: "123 Main St, City",
+    coordinates: { lat: 40.7128, lng: -74.0060 },
   },
   {
     id: "req-002",
@@ -75,6 +83,7 @@ const sampleRequests: BloodRequest[] = [
     urgency: "normal",
     date: "2024-03-10",
     location: "456 Oak Ave, County",
+    coordinates: { lat: 34.0522, lng: -118.2437 },
   },
   {
     id: "req-003",
@@ -84,6 +93,7 @@ const sampleRequests: BloodRequest[] = [
     urgency: "emergency",
     date: "2024-03-05",
     location: "789 Pine Rd, Metro",
+    coordinates: { lat: 41.8781, lng: -87.6298 },
   },
 ];
 
@@ -140,18 +150,65 @@ const sampleHospitals: HospitalType[] = [
     id: "hosp-001",
     name: "City General Hospital",
     location: "123 Main St, City",
+    coordinates: { lat: 40.7128, lng: -74.0060 },
   },
   {
     id: "hosp-002",
     name: "County Medical Center",
     location: "456 Oak Ave, County",
+    coordinates: { lat: 34.0522, lng: -118.2437 },
   },
   {
     id: "hosp-003",
     name: "Metro Healthcare",
     location: "789 Pine Rd, Metro",
+    coordinates: { lat: 41.8781, lng: -87.6298 },
   },
 ];
+
+const HospitalLocationDialog = ({ hospital }: { hospital: string }) => {
+  const hospitalData = sampleHospitals.find(h => h.name === hospital);
+
+  if (!hospitalData) return null;
+
+  const getDirectionsLink = () => {
+    return `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(
+      hospitalData.location
+    )}`;
+  };
+
+  return (
+    <Dialog>
+      <DialogTrigger asChild>
+        <Button variant="outline" size="sm" className="gap-1">
+          <MapPin className="h-4 w-4" /> Get Location
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle>{hospitalData.name}</DialogTitle>
+          <DialogDescription>
+            {hospitalData.location}
+          </DialogDescription>
+        </DialogHeader>
+        <div className="p-4 bg-gray-100 rounded-md mb-4">
+          <div className="aspect-video bg-gray-200 rounded-md flex items-center justify-center mb-2">
+            <div className="text-gray-500">Hospital Location Map Placeholder</div>
+          </div>
+          <p className="text-sm text-gray-700">{hospitalData.location}</p>
+        </div>
+        <div className="flex justify-between">
+          <Button variant="outline" className="gap-1">
+            <MapPin className="h-4 w-4" /> Copy Address
+          </Button>
+          <Button className="gap-1" onClick={() => window.open(getDirectionsLink(), '_blank')}>
+            <Navigation className="h-4 w-4" /> Get Directions
+          </Button>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+};
 
 const Dashboard = () => {
   const { user, isAuthenticated } = useAuth();
@@ -159,17 +216,15 @@ const Dashboard = () => {
   const [activeTab, setActiveTab] = useState("donor");
 
   React.useEffect(() => {
-    // Redirect to login if not authenticated
     if (!isAuthenticated) {
       navigate("/login");
     } else if (user?.role && user.role !== "donor") {
-      // Set active tab based on user role
       setActiveTab(user.role);
     }
   }, [isAuthenticated, navigate, user]);
 
   if (!isAuthenticated) {
-    return null; // Don't render anything while redirecting
+    return null;
   }
 
   const renderDonorDashboard = () => (
@@ -246,7 +301,7 @@ const Dashboard = () => {
                     <Badge
                       variant={
                         request.status === "fulfilled"
-                          ? "success"
+                          ? "secondary"
                           : request.status === "pending"
                           ? "secondary"
                           : "outline"
@@ -255,12 +310,16 @@ const Dashboard = () => {
                       {request.status}
                     </Badge>
                   </TableCell>
-                  <TableCell className="text-right">
-                    {request.status === "pending" ? (
-                      <Button size="sm" className="bg-primary hover:bg-blood-dark">
-                        Donate
-                      </Button>
-                    ) : (
+                  <TableCell className="flex justify-end gap-2">
+                    {request.status === "pending" && (
+                      <>
+                        <HospitalLocationDialog hospital={request.hospital} />
+                        <Button size="sm" className="bg-primary hover:bg-primary/90">
+                          Donate
+                        </Button>
+                      </>
+                    )}
+                    {request.status !== "pending" && (
                       <Button size="sm" variant="outline" disabled>
                         {request.status === "fulfilled" ? "Completed" : "Expired"}
                       </Button>
@@ -352,7 +411,7 @@ const Dashboard = () => {
               Manage your current and past blood requests
             </CardDescription>
           </div>
-          <Button className="bg-primary hover:bg-blood-dark">
+          <Button className="bg-primary hover:bg-primary/90">
             New Request
           </Button>
         </CardHeader>
@@ -391,7 +450,7 @@ const Dashboard = () => {
                     <Badge
                       variant={
                         request.status === "fulfilled"
-                          ? "success"
+                          ? "secondary"
                           : request.status === "pending"
                           ? "secondary"
                           : "outline"
@@ -493,7 +552,7 @@ const Dashboard = () => {
               Manage your hospital's blood requests
             </CardDescription>
           </div>
-          <Button className="bg-primary hover:bg-blood-dark">
+          <Button className="bg-primary hover:bg-primary/90">
             Create Request
           </Button>
         </CardHeader>
@@ -530,7 +589,7 @@ const Dashboard = () => {
                     <Badge
                       variant={
                         request.status === "fulfilled"
-                          ? "success"
+                          ? "secondary"
                           : request.status === "pending"
                           ? "secondary"
                           : "outline"
