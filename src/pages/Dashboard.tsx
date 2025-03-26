@@ -1,459 +1,619 @@
 
 import React, { useState } from "react";
-import { 
-  DropletIcon, 
-  Heart, 
-  Calendar, 
-  MapPin, 
-  Clock, 
-  CheckCircle, 
-  Bell, 
-  User,
-  Settings,
-  LogOut
-} from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { useAuth } from "@/context/AuthContext";
+import { useNavigate } from "react-router-dom";
+
+// Type definitions
+type BloodRequest = {
+  id: string;
+  bloodType: string;
+  hospital: string;
+  status: "pending" | "fulfilled" | "expired";
+  urgency: "normal" | "urgent" | "emergency";
+  date: string;
+  location: string;
+};
+
+type DonationHistory = {
+  id: string;
+  date: string;
+  hospital: string;
+  bloodType: string;
+  recipient: string | null;
+};
+
+type HospitalRequest = {
+  id: string;
+  date: string;
+  bloodType: string;
+  urgency: "normal" | "urgent" | "emergency";
+  status: "pending" | "fulfilled" | "expired";
+};
+
+type HospitalType = {
+  id: string;
+  name: string;
+  location: string;
+};
+
+// Sample data
+const sampleRequests: BloodRequest[] = [
+  {
+    id: "req-001",
+    bloodType: "O+",
+    hospital: "City General Hospital",
+    status: "pending",
+    urgency: "urgent",
+    date: "2024-03-15",
+    location: "123 Main St, City",
+  },
+  {
+    id: "req-002",
+    bloodType: "A-",
+    hospital: "County Medical Center",
+    status: "fulfilled",
+    urgency: "normal",
+    date: "2024-03-10",
+    location: "456 Oak Ave, County",
+  },
+  {
+    id: "req-003",
+    bloodType: "AB+",
+    hospital: "Metro Healthcare",
+    status: "expired",
+    urgency: "emergency",
+    date: "2024-03-05",
+    location: "789 Pine Rd, Metro",
+  },
+];
+
+const sampleDonations: DonationHistory[] = [
+  {
+    id: "don-001",
+    date: "2024-02-20",
+    hospital: "City General Hospital",
+    bloodType: "O+",
+    recipient: "John Doe",
+  },
+  {
+    id: "don-002",
+    date: "2024-01-15",
+    hospital: "County Medical Center",
+    bloodType: "O+",
+    recipient: null,
+  },
+  {
+    id: "don-003",
+    date: "2023-12-05",
+    hospital: "Metro Healthcare",
+    bloodType: "O+",
+    recipient: "Jane Smith",
+  },
+];
+
+const sampleHospitalRequests: HospitalRequest[] = [
+  {
+    id: "hosp-001",
+    date: "2024-03-20",
+    bloodType: "O+",
+    urgency: "emergency",
+    status: "pending",
+  },
+  {
+    id: "hosp-002",
+    date: "2024-03-18",
+    bloodType: "B-",
+    urgency: "normal",
+    status: "fulfilled",
+  },
+  {
+    id: "hosp-003",
+    date: "2024-03-15",
+    bloodType: "AB+",
+    urgency: "urgent",
+    status: "expired",
+  },
+];
+
+const sampleHospitals: HospitalType[] = [
+  {
+    id: "hosp-001",
+    name: "City General Hospital",
+    location: "123 Main St, City",
+  },
+  {
+    id: "hosp-002",
+    name: "County Medical Center",
+    location: "456 Oak Ave, County",
+  },
+  {
+    id: "hosp-003",
+    name: "Metro Healthcare",
+    location: "789 Pine Rd, Metro",
+  },
+];
 
 const Dashboard = () => {
-  const [role] = useState<"donor" | "hospital">("donor");
+  const { user, isAuthenticated } = useAuth();
+  const navigate = useNavigate();
+  const [activeTab, setActiveTab] = useState("donor");
+
+  React.useEffect(() => {
+    // Redirect to login if not authenticated
+    if (!isAuthenticated) {
+      navigate("/login");
+    } else if (user?.role && user.role !== "donor") {
+      // Set active tab based on user role
+      setActiveTab(user.role);
+    }
+  }, [isAuthenticated, navigate, user]);
+
+  if (!isAuthenticated) {
+    return null; // Don't render anything while redirecting
+  }
+
+  const renderDonorDashboard = () => (
+    <div className="space-y-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle>Blood Type</CardTitle>
+            <CardDescription>Your registered blood type</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="text-3xl font-bold text-primary">O+</div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle>Donations</CardTitle>
+            <CardDescription>Total donations made</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="text-3xl font-bold">{sampleDonations.length}</div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle>Lives Saved</CardTitle>
+            <CardDescription>Estimated lives impacted</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="text-3xl font-bold">{sampleDonations.length * 3}</div>
+          </CardContent>
+        </Card>
+      </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Nearby Blood Requests</CardTitle>
+          <CardDescription>
+            Blood requests from hospitals in your area
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Date</TableHead>
+                <TableHead>Blood Type</TableHead>
+                <TableHead>Hospital</TableHead>
+                <TableHead>Urgency</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead className="text-right">Action</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {sampleRequests.map((request) => (
+                <TableRow key={request.id}>
+                  <TableCell>{request.date}</TableCell>
+                  <TableCell className="font-medium">{request.bloodType}</TableCell>
+                  <TableCell>{request.hospital}</TableCell>
+                  <TableCell>
+                    <Badge
+                      variant={
+                        request.urgency === "emergency"
+                          ? "destructive"
+                          : request.urgency === "urgent"
+                          ? "default"
+                          : "outline"
+                      }
+                    >
+                      {request.urgency}
+                    </Badge>
+                  </TableCell>
+                  <TableCell>
+                    <Badge
+                      variant={
+                        request.status === "fulfilled"
+                          ? "success"
+                          : request.status === "pending"
+                          ? "secondary"
+                          : "outline"
+                      }
+                    >
+                      {request.status}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="text-right">
+                    {request.status === "pending" ? (
+                      <Button size="sm" className="bg-primary hover:bg-blood-dark">
+                        Donate
+                      </Button>
+                    ) : (
+                      <Button size="sm" variant="outline" disabled>
+                        {request.status === "fulfilled" ? "Completed" : "Expired"}
+                      </Button>
+                    )}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Donation History</CardTitle>
+          <CardDescription>Your previous blood donations</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Date</TableHead>
+                <TableHead>Hospital</TableHead>
+                <TableHead>Blood Type</TableHead>
+                <TableHead>Recipient</TableHead>
+                <TableHead className="text-right">Certificate</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {sampleDonations.map((donation) => (
+                <TableRow key={donation.id}>
+                  <TableCell>{donation.date}</TableCell>
+                  <TableCell>{donation.hospital}</TableCell>
+                  <TableCell>{donation.bloodType}</TableCell>
+                  <TableCell>
+                    {donation.recipient || "General Blood Bank"}
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <Button size="sm" variant="outline">
+                      Download
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
+    </div>
+  );
+
+  const renderRecipientDashboard = () => (
+    <div className="space-y-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle>Blood Type</CardTitle>
+            <CardDescription>Your blood type</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="text-3xl font-bold text-primary">AB-</div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle>Active Requests</CardTitle>
+            <CardDescription>Your pending blood requests</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="text-3xl font-bold">1</div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle>Nearby Hospitals</CardTitle>
+            <CardDescription>Blood banks in your area</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="text-3xl font-bold">{sampleHospitals.length}</div>
+          </CardContent>
+        </Card>
+      </div>
+
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between">
+          <div>
+            <CardTitle>Your Blood Requests</CardTitle>
+            <CardDescription>
+              Manage your current and past blood requests
+            </CardDescription>
+          </div>
+          <Button className="bg-primary hover:bg-blood-dark">
+            New Request
+          </Button>
+        </CardHeader>
+        <CardContent>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Date</TableHead>
+                <TableHead>Blood Type</TableHead>
+                <TableHead>Hospital</TableHead>
+                <TableHead>Urgency</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead className="text-right">Action</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {sampleRequests.slice(0, 2).map((request) => (
+                <TableRow key={request.id}>
+                  <TableCell>{request.date}</TableCell>
+                  <TableCell className="font-medium">{request.bloodType}</TableCell>
+                  <TableCell>{request.hospital}</TableCell>
+                  <TableCell>
+                    <Badge
+                      variant={
+                        request.urgency === "emergency"
+                          ? "destructive"
+                          : request.urgency === "urgent"
+                          ? "default"
+                          : "outline"
+                      }
+                    >
+                      {request.urgency}
+                    </Badge>
+                  </TableCell>
+                  <TableCell>
+                    <Badge
+                      variant={
+                        request.status === "fulfilled"
+                          ? "success"
+                          : request.status === "pending"
+                          ? "secondary"
+                          : "outline"
+                      }
+                    >
+                      {request.status}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <Button size="sm" variant="outline">
+                      Details
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Nearby Hospitals & Blood Banks</CardTitle>
+          <CardDescription>
+            Find hospitals and blood banks in your area
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Name</TableHead>
+                <TableHead>Location</TableHead>
+                <TableHead className="text-right">Contact</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {sampleHospitals.map((hospital) => (
+                <TableRow key={hospital.id}>
+                  <TableCell className="font-medium">{hospital.name}</TableCell>
+                  <TableCell>{hospital.location}</TableCell>
+                  <TableCell className="text-right">
+                    <Button size="sm" variant="outline">
+                      Get Directions
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
+    </div>
+  );
+
+  const renderHospitalDashboard = () => (
+    <div className="space-y-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle>Blood Bank</CardTitle>
+            <CardDescription>Available blood units</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="text-3xl font-bold text-primary">24 units</div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle>Active Requests</CardTitle>
+            <CardDescription>Current blood requests</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="text-3xl font-bold">
+              {
+                sampleHospitalRequests.filter(
+                  (r) => r.status === "pending"
+                ).length
+              }
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle>Registered Donors</CardTitle>
+            <CardDescription>Donors in your network</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="text-3xl font-bold">84</div>
+          </CardContent>
+        </Card>
+      </div>
+
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between">
+          <div>
+            <CardTitle>Blood Requests</CardTitle>
+            <CardDescription>
+              Manage your hospital's blood requests
+            </CardDescription>
+          </div>
+          <Button className="bg-primary hover:bg-blood-dark">
+            Create Request
+          </Button>
+        </CardHeader>
+        <CardContent>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Date</TableHead>
+                <TableHead>Blood Type</TableHead>
+                <TableHead>Urgency</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead className="text-right">Action</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {sampleHospitalRequests.map((request) => (
+                <TableRow key={request.id}>
+                  <TableCell>{request.date}</TableCell>
+                  <TableCell className="font-medium">{request.bloodType}</TableCell>
+                  <TableCell>
+                    <Badge
+                      variant={
+                        request.urgency === "emergency"
+                          ? "destructive"
+                          : request.urgency === "urgent"
+                          ? "default"
+                          : "outline"
+                      }
+                    >
+                      {request.urgency}
+                    </Badge>
+                  </TableCell>
+                  <TableCell>
+                    <Badge
+                      variant={
+                        request.status === "fulfilled"
+                          ? "success"
+                          : request.status === "pending"
+                          ? "secondary"
+                          : "outline"
+                      }
+                    >
+                      {request.status}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <Button size="sm" variant="outline">
+                      Manage
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Blood Inventory</CardTitle>
+          <CardDescription>
+            Current blood stock in your blood bank
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+            {["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"].map(
+              (type) => (
+                <Card key={type}>
+                  <CardHeader className="py-2">
+                    <CardTitle className="text-center text-lg">{type}</CardTitle>
+                  </CardHeader>
+                  <CardContent className="py-2">
+                    <div className="text-center text-2xl font-bold">
+                      {Math.floor(Math.random() * 10)} units
+                    </div>
+                  </CardContent>
+                </Card>
+              )
+            )}
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
 
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
-      <main className="flex-grow pt-24 pb-16 px-6 md:px-10 bg-gradient-to-b from-white to-gray-50">
-        <div className="max-w-7xl mx-auto">
-          {role === "donor" ? <DonorDashboard /> : <HospitalDashboard />}
+      <main className="flex-grow pt-28 pb-16 px-6 md:px-10 bg-gradient-to-b from-white to-gray-50">
+        <div className="max-w-6xl mx-auto">
+          <div className="mb-8">
+            <h1 className="text-3xl font-bold">Welcome, {user?.name || "User"}!</h1>
+            <p className="text-gray-600">
+              Manage your blood donation activity and requests
+            </p>
+          </div>
+
+          <Tabs
+            defaultValue={activeTab}
+            value={activeTab}
+            onValueChange={setActiveTab}
+            className="w-full"
+          >
+            <TabsList className="mb-6 w-full justify-start">
+              <TabsTrigger value="donor">Donor Dashboard</TabsTrigger>
+              <TabsTrigger value="recipient">Recipient Dashboard</TabsTrigger>
+              <TabsTrigger value="hospital">Hospital Dashboard</TabsTrigger>
+            </TabsList>
+            <TabsContent value="donor">{renderDonorDashboard()}</TabsContent>
+            <TabsContent value="recipient">
+              {renderRecipientDashboard()}
+            </TabsContent>
+            <TabsContent value="hospital">
+              {renderHospitalDashboard()}
+            </TabsContent>
+          </Tabs>
         </div>
       </main>
       <Footer />
-    </div>
-  );
-};
-
-const DonorDashboard = () => {
-  return (
-    <div className="animate-fade-in">
-      <header className="mb-10">
-        <h1 className="text-3xl md:text-4xl font-bold mb-4">Donor Dashboard</h1>
-        <p className="text-gray-600">Welcome back, John! Track your donations and help save lives.</p>
-      </header>
-
-      <div className="flex flex-col lg:flex-row gap-6">
-        {/* Sidebar */}
-        <aside className="lg:w-64 glass rounded-xl p-6 h-fit">
-          <div className="flex flex-col items-center mb-6">
-            <div className="w-20 h-20 bg-gray-200 rounded-full flex items-center justify-center mb-4">
-              <User className="h-10 w-10 text-gray-500" />
-            </div>
-            <h2 className="text-xl font-semibold">John Doe</h2>
-            <p className="text-sm text-gray-600">Blood Type: A+</p>
-          </div>
-          
-          <nav className="space-y-1">
-            <Button variant="ghost" className="w-full justify-start text-primary">
-              <Heart className="mr-2 h-4 w-4" /> Dashboard
-            </Button>
-            <Button variant="ghost" className="w-full justify-start">
-              <Calendar className="mr-2 h-4 w-4" /> Donations
-            </Button>
-            <Button variant="ghost" className="w-full justify-start">
-              <Bell className="mr-2 h-4 w-4" /> Notifications
-            </Button>
-            <Button variant="ghost" className="w-full justify-start">
-              <Settings className="mr-2 h-4 w-4" /> Settings
-            </Button>
-            <Button variant="ghost" className="w-full justify-start text-gray-600">
-              <LogOut className="mr-2 h-4 w-4" /> Sign Out
-            </Button>
-          </nav>
-        </aside>
-
-        {/* Main Content */}
-        <div className="flex-1">
-          {/* Stats */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            <Card className="glass">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-gray-500">Total Donations</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-3xl font-bold">5</div>
-                <p className="text-xs text-gray-500 mt-1">Lives saved: ~15</p>
-              </CardContent>
-            </Card>
-            <Card className="glass">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-gray-500">Last Donation</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-3xl font-bold">21 days ago</div>
-                <p className="text-xs text-gray-500 mt-1">Eligible again in 69 days</p>
-              </CardContent>
-            </Card>
-            <Card className="glass">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-gray-500">Donation Eligibility</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="flex items-center justify-between mb-2">
-                  <div className="text-3xl font-bold">23%</div>
-                  <Badge className="bg-orange-500">In Progress</Badge>
-                </div>
-                <Progress value={23} className="h-2 bg-gray-100" />
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Tabs */}
-          <Tabs defaultValue="upcoming" className="glass rounded-xl p-6">
-            <TabsList className="mb-6">
-              <TabsTrigger value="upcoming">Upcoming Donations</TabsTrigger>
-              <TabsTrigger value="history">Donation History</TabsTrigger>
-              <TabsTrigger value="requests">Nearby Requests</TabsTrigger>
-            </TabsList>
-            
-            <TabsContent value="upcoming" className="animate-fade-in">
-              <div className="text-center py-8">
-                <DropletIcon className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-                <h3 className="text-lg font-medium mb-2">No Upcoming Donations</h3>
-                <p className="text-gray-600 mb-6">You don't have any scheduled donations at the moment.</p>
-                <Button className="bg-primary hover:bg-blood-dark gap-2">
-                  <Heart className="h-4 w-4" />
-                  Schedule a Donation
-                </Button>
-              </div>
-            </TabsContent>
-            
-            <TabsContent value="history" className="animate-fade-in">
-              <div className="space-y-4">
-                {[1, 2, 3, 4, 5].reverse().map((i) => (
-                  <Card key={i} className="border border-gray-200">
-                    <CardContent className="p-6">
-                      <div className="flex items-start justify-between">
-                        <div>
-                          <h3 className="font-semibold mb-1">City Hospital Blood Bank</h3>
-                          <div className="flex items-center gap-2 text-sm text-gray-600 mb-2">
-                            <Calendar className="h-4 w-4" />
-                            <span>{`${i * 2} ${i === 1 ? 'Month' : 'Months'} Ago`}</span>
-                          </div>
-                          <div className="flex items-center gap-4 text-sm">
-                            <Badge className="bg-success">Completed</Badge>
-                            <span className="text-gray-600">Blood Type: A+</span>
-                          </div>
-                        </div>
-                        <div className="text-right">
-                          <Button variant="outline" size="sm">View Details</Button>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            </TabsContent>
-            
-            <TabsContent value="requests" className="animate-fade-in">
-              <div className="space-y-4">
-                <Card className="border border-gray-200 bg-red-50">
-                  <CardContent className="p-6">
-                    <div className="flex items-start justify-between">
-                      <div>
-                        <Badge className="bg-primary mb-2">Urgent</Badge>
-                        <h3 className="font-semibold mb-1">Central Hospital</h3>
-                        <div className="flex items-center gap-2 text-sm text-gray-600 mb-2">
-                          <MapPin className="h-4 w-4" />
-                          <span>2.5 miles away</span>
-                        </div>
-                        <div className="flex items-center gap-4 text-sm">
-                          <span className="font-semibold">Blood Type: A+</span>
-                          <div className="flex items-center gap-1">
-                            <Clock className="h-4 w-4 text-primary" />
-                            <span className="text-primary">Needed within 24 hours</span>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <Button className="bg-primary hover:bg-blood-dark gap-2 mb-2">
-                          <Heart className="h-4 w-4" />
-                          Donate Now
-                        </Button>
-                        <p className="text-xs text-gray-600">5 donors needed</p>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-                
-                <Card className="border border-gray-200">
-                  <CardContent className="p-6">
-                    <div className="flex items-start justify-between">
-                      <div>
-                        <Badge variant="outline" className="mb-2">Regular</Badge>
-                        <h3 className="font-semibold mb-1">City Blood Bank</h3>
-                        <div className="flex items-center gap-2 text-sm text-gray-600 mb-2">
-                          <MapPin className="h-4 w-4" />
-                          <span>1.2 miles away</span>
-                        </div>
-                        <div className="flex items-center gap-4 text-sm">
-                          <span className="font-semibold">Blood Type: All Types</span>
-                          <div className="flex items-center gap-1">
-                            <Clock className="h-4 w-4 text-gray-600" />
-                            <span className="text-gray-600">Regular donation</span>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <Button variant="outline" className="gap-2 mb-2">
-                          <Calendar className="h-4 w-4" />
-                          Schedule
-                        </Button>
-                        <p className="text-xs text-gray-600">Replenishing stock</p>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
-            </TabsContent>
-          </Tabs>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-const HospitalDashboard = () => {
-  return (
-    <div className="animate-fade-in">
-      <header className="mb-10">
-        <h1 className="text-3xl md:text-4xl font-bold mb-4">Hospital Dashboard</h1>
-        <p className="text-gray-600">Welcome back, City Hospital! Manage your blood inventory and requests.</p>
-      </header>
-
-      <div className="flex flex-col lg:flex-row gap-6">
-        {/* Sidebar */}
-        <aside className="lg:w-64 glass rounded-xl p-6 h-fit">
-          <div className="flex flex-col items-center mb-6">
-            <div className="w-20 h-20 bg-gray-200 rounded-full flex items-center justify-center mb-4">
-              <Hospital className="h-10 w-10 text-gray-500" />
-            </div>
-            <h2 className="text-xl font-semibold">City Hospital</h2>
-            <p className="text-sm text-gray-600">Medical Center</p>
-          </div>
-          
-          <nav className="space-y-1">
-            <Button variant="ghost" className="w-full justify-start text-primary">
-              <DropletIcon className="mr-2 h-4 w-4" /> Inventory
-            </Button>
-            <Button variant="ghost" className="w-full justify-start">
-              <Heart className="mr-2 h-4 w-4" /> Blood Requests
-            </Button>
-            <Button variant="ghost" className="w-full justify-start">
-              <CheckCircle className="mr-2 h-4 w-4" /> Donations
-            </Button>
-            <Button variant="ghost" className="w-full justify-start">
-              <Bell className="mr-2 h-4 w-4" /> Notifications
-            </Button>
-            <Button variant="ghost" className="w-full justify-start">
-              <Settings className="mr-2 h-4 w-4" /> Settings
-            </Button>
-            <Button variant="ghost" className="w-full justify-start text-gray-600">
-              <LogOut className="mr-2 h-4 w-4" /> Sign Out
-            </Button>
-          </nav>
-        </aside>
-
-        {/* Main Content */}
-        <div className="flex-1">
-          {/* Blood Stock Overview */}
-          <Card className="glass mb-8">
-            <CardHeader>
-              <CardTitle>Blood Inventory</CardTitle>
-              <CardDescription>Current stock levels by blood type</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                {["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"].map((type, i) => {
-                  // Random stock level between 10% and 100%
-                  const stockLevel = Math.floor(Math.random() * 90) + 10;
-                  let statusColor = "bg-success";
-                  
-                  if (stockLevel < 30) {
-                    statusColor = "bg-red-500";
-                  } else if (stockLevel < 60) {
-                    statusColor = "bg-orange-500";
-                  }
-                  
-                  return (
-                    <div key={type} className="border rounded-lg p-4">
-                      <div className="flex justify-between items-center mb-2">
-                        <span className="text-lg font-bold">{type}</span>
-                        <Badge className={statusColor}>{stockLevel}%</Badge>
-                      </div>
-                      <Progress value={stockLevel} className="h-2" />
-                      <div className="mt-2 text-sm text-gray-600">
-                        {Math.floor(stockLevel / 10)} units
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </CardContent>
-            <CardFooter>
-              <Button className="bg-primary hover:bg-blood-dark">Create Blood Request</Button>
-            </CardFooter>
-          </Card>
-
-          {/* Tabs */}
-          <Tabs defaultValue="active" className="glass rounded-xl p-6">
-            <TabsList className="mb-6">
-              <TabsTrigger value="active">Active Requests</TabsTrigger>
-              <TabsTrigger value="incoming">Incoming Donations</TabsTrigger>
-              <TabsTrigger value="history">Request History</TabsTrigger>
-            </TabsList>
-            
-            <TabsContent value="active" className="animate-fade-in">
-              <div className="space-y-4">
-                <Card className="border border-gray-200 bg-red-50">
-                  <CardContent className="p-6">
-                    <div className="flex items-start justify-between">
-                      <div>
-                        <Badge className="bg-primary mb-2">Urgent</Badge>
-                        <h3 className="font-semibold mb-1">O- Blood Request</h3>
-                        <div className="flex items-center gap-2 text-sm text-gray-600 mb-2">
-                          <Calendar className="h-4 w-4" />
-                          <span>Created 2 hours ago</span>
-                        </div>
-                        <div className="flex items-center gap-4 text-sm">
-                          <span className="font-semibold">5 units needed</span>
-                          <div className="flex items-center gap-1">
-                            <Clock className="h-4 w-4 text-primary" />
-                            <span className="text-primary">Expires in 22 hours</span>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <div className="text-sm font-medium mb-2">2/5 donors confirmed</div>
-                        <Button variant="outline" size="sm">View Details</Button>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-                
-                <Card className="border border-gray-200">
-                  <CardContent className="p-6">
-                    <div className="flex items-start justify-between">
-                      <div>
-                        <Badge variant="outline" className="mb-2">Regular</Badge>
-                        <h3 className="font-semibold mb-1">A+ Blood Request</h3>
-                        <div className="flex items-center gap-2 text-sm text-gray-600 mb-2">
-                          <Calendar className="h-4 w-4" />
-                          <span>Created 1 day ago</span>
-                        </div>
-                        <div className="flex items-center gap-4 text-sm">
-                          <span className="font-semibold">3 units needed</span>
-                          <div className="flex items-center gap-1">
-                            <Clock className="h-4 w-4 text-gray-600" />
-                            <span className="text-gray-600">Expires in 6 days</span>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <div className="text-sm font-medium mb-2">1/3 donors confirmed</div>
-                        <Button variant="outline" size="sm">View Details</Button>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
-            </TabsContent>
-            
-            <TabsContent value="incoming" className="animate-fade-in">
-              <div className="space-y-4">
-                <Card className="border border-gray-200">
-                  <CardContent className="p-6">
-                    <div className="flex items-start justify-between">
-                      <div>
-                        <h3 className="font-semibold mb-1">Jane Smith (O-)</h3>
-                        <div className="flex items-center gap-2 text-sm text-gray-600 mb-2">
-                          <Calendar className="h-4 w-4" />
-                          <span>Today, 2:30 PM</span>
-                        </div>
-                        <div className="flex items-center gap-4 text-sm">
-                          <Badge className="bg-success">Confirmed</Badge>
-                          <div className="flex items-center gap-1">
-                            <MapPin className="h-4 w-4 text-gray-600" />
-                            <span className="text-gray-600">ETA: 30 minutes</span>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <Button variant="outline" size="sm" className="mb-2">View Profile</Button>
-                        <p className="text-xs text-gray-600">Previous donations: 3</p>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-                
-                <Card className="border border-gray-200">
-                  <CardContent className="p-6">
-                    <div className="flex items-start justify-between">
-                      <div>
-                        <h3 className="font-semibold mb-1">Robert Johnson (A+)</h3>
-                        <div className="flex items-center gap-2 text-sm text-gray-600 mb-2">
-                          <Calendar className="h-4 w-4" />
-                          <span>Today, 4:15 PM</span>
-                        </div>
-                        <div className="flex items-center gap-4 text-sm">
-                          <Badge className="bg-success">Confirmed</Badge>
-                          <div className="flex items-center gap-1">
-                            <MapPin className="h-4 w-4 text-gray-600" />
-                            <span className="text-gray-600">ETA: 2 hours</span>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <Button variant="outline" size="sm" className="mb-2">View Profile</Button>
-                        <p className="text-xs text-gray-600">First-time donor</p>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
-            </TabsContent>
-            
-            <TabsContent value="history" className="animate-fade-in">
-              <div className="space-y-4">
-                {[1, 2, 3].map((i) => (
-                  <Card key={i} className="border border-gray-200">
-                    <CardContent className="p-6">
-                      <div className="flex items-start justify-between">
-                        <div>
-                          <h3 className="font-semibold mb-1">{["B+", "AB-", "O+"][i-1]} Blood Request</h3>
-                          <div className="flex items-center gap-2 text-sm text-gray-600 mb-2">
-                            <Calendar className="h-4 w-4" />
-                            <span>{i} {i === 1 ? 'week' : 'weeks'} ago</span>
-                          </div>
-                          <div className="flex items-center gap-4 text-sm">
-                            <Badge className="bg-success">Completed</Badge>
-                            <span className="text-gray-600">{i + 1} units collected</span>
-                          </div>
-                        </div>
-                        <div className="text-right">
-                          <Button variant="outline" size="sm">View Details</Button>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            </TabsContent>
-          </Tabs>
-        </div>
-      </div>
     </div>
   );
 };

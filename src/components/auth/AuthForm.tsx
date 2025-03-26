@@ -1,6 +1,6 @@
 
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/context/AuthContext";
 
 type UserRole = "donor" | "recipient" | "hospital";
 
@@ -30,33 +31,39 @@ export const AuthForm = ({ type }: AuthFormProps) => {
   const [bloodType, setBloodType] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
+  const { login, register } = useAuth();
+  const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
 
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-
       if (type === "login") {
+        await login(email, password);
         toast({
           title: "Success!",
           description: "You have successfully logged in.",
         });
+        navigate("/dashboard");
       } else {
+        await register({
+          name,
+          email,
+          password,
+          role: userRole,
+        });
         toast({
           title: "Account created!",
           description: "Your account has been created successfully.",
         });
+        navigate("/dashboard");
       }
-
-      // Redirect would happen here
     } catch (error) {
       toast({
         variant: "destructive",
         title: "Error",
-        description: "Something went wrong. Please try again.",
+        description: error instanceof Error ? error.message : "An unknown error occurred.",
       });
     } finally {
       setIsLoading(false);
