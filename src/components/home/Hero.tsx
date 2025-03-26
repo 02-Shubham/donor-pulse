@@ -3,6 +3,8 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Heart, Activity, ChevronRight } from "lucide-react";
+import image from "@/public/image.png";
+
 
 const Hero = () => {
   return (
@@ -13,7 +15,7 @@ const Hero = () => {
         <div className="absolute bottom-1/4 right-10 w-80 h-80 rounded-full bg-green-100 opacity-70 blur-3xl"></div>
       </div>
 
-      <div className="max-w-7xl mx-auto w-full relative z-10 pt-20 pb-16 md:py-32 flex flex-col md:flex-row items-center gap-12 md:gap-6">
+      <div className="max-w-7xl mx-auto w-full relative z-10 pt-20 pb-16 md:py-32 flex flex-col  md:flex-row items-center gap-12 md:gap-6">
         {/* Hero Content */}
         <div className="flex-1 md:max-w-[550px] animate-fade-in">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-50 border border-red-100 text-red-600 text-xs font-medium mb-6">
@@ -58,19 +60,19 @@ const Hero = () => {
         </div>
         
         {/* Hero Image */}
-        <div className="flex-1 max-w-[500px] w-full animate-fade-in animation-delay-200">
-          <div className="relative aspect-square md:aspect-auto md:h-[500px] w-full rounded-xl overflow-hidden glass">
+        <div className="flex-1 max-w-[800px]  w-full animate-fade-in animation-delay-200">
+          <div className="relative aspect-square mr-40  md:aspect-auto md:h-[400px] w-full rounded-xl overflow-hidden glass">
             <div className="absolute inset-0 bg-gradient-to-tr from-blood/20 to-success/20"></div>
             <div className="absolute inset-1 rounded-lg overflow-hidden">
               <img 
-                src="https://images.unsplash.com/photo-1615461066841-6116e61058f4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80" 
+                src={image} 
                 alt="Blood donation" 
                 className="w-full h-full object-cover"
               />
             </div>
             
             {/* Stat Cards */}
-            <div className="absolute -bottom-6 -left-6 glass rounded-lg p-4 shadow-lg animate-pulse-subtle">
+            {/* <div className="absolute -bottom-6 -left-6 glass rounded-lg p-4 shadow-lg animate-pulse-subtle">
               <p className="text-primary font-bold text-2xl">A+</p>
               <p className="text-xs text-gray-600">Most needed type</p>
             </div>
@@ -78,7 +80,7 @@ const Hero = () => {
             <div className="absolute -top-6 -right-6 glass rounded-lg p-4 shadow-lg animate-pulse-subtle">
               <p className="text-success font-bold text-2xl">15min</p>
               <p className="text-xs text-gray-600">Average donation time</p>
-            </div>
+            </div> */}
           </div>
         </div>
       </div>
