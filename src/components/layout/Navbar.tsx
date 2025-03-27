@@ -71,7 +71,7 @@ export const Navbar = () => {
           className="flex items-center gap-2 text-2xl font-bold text-primary animate-fade-in"
         >
           <DropletIcon className="h-8 w-8" />
-          <span className="hidden sm:inline-block">LifeLink</span>
+          <span className="hidden sm:inline-block">BloodCall</span>
         </Link>
 
         {/* Desktop Navigation */}
@@ -175,7 +175,7 @@ export const Navbar = () => {
                   </Avatar>
                   <div>
                     <p className="font-medium">{user?.name}</p>
-                    <p className="text-xs text-gray-500">{user?.email}</p>
+                    <p className="text-xs text-gray-500">O+</p>
                   </div>
                 </div>
                 <Button 

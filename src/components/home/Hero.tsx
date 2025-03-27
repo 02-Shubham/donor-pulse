@@ -11,8 +11,8 @@ const Hero = () => {
     <div className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-b from-white to-gray-100 px-6 md:px-10">
       {/* Background Elements */}
       <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute top-1/3 left-10 w-64 h-64 rounded-full bg-red-100 opacity-70 blur-3xl"></div>
-        <div className="absolute bottom-1/4 right-10 w-80 h-80 rounded-full bg-green-100 opacity-70 blur-3xl"></div>
+        <div className="absolute top-1/3 left-10 w-64 h-64 rounded-full bg-red-200 opacity-70 blur-3xl"></div>
+        <div className="absolute bottom-1/4 right-10 w-80 h-80 rounded-full bg-green-200 opacity-70 blur-3xl"></div>
       </div>
 
       <div className="max-w-7xl mx-auto w-full relative z-10 pt-20 pb-16 md:py-32 flex flex-col  md:flex-row items-center gap-12 md:gap-6">
@@ -29,7 +29,7 @@ const Hero = () => {
           </h1>
           
           <p className="text-gray-600 text-lg md:text-xl mb-8 max-w-lg">
-            LifeLink connects blood donors with hospitals and patients in need. Join our community and help save lives today.
+            BloodCall connects blood donors with hospitals and patients in need. Join our community and help save lives today.
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4">

@@ -58,7 +58,7 @@ const Features = () => {
             Features Designed to Save Lives
           </h2>
           <p className="text-gray-600 text-lg animate-fade-in">
-            LifeLink combines technology and community to create a seamless blood donation experience.
+            BloodCall combines technology and community to create a seamless blood donation experience.
           </p>
         </div>
 
@@ -67,7 +67,7 @@ const Features = () => {
           {features.map((feature, index) => (
             <div 
               key={index} 
-              className="glass rounded-xl p-6 transition-all duration-300 hover:shadow-md animate-fade-in hover:-translate-y-1"
+              className="glass rounded-xl p-6 transition-all duration-300 border-red-600 hover:shadow-md animate-fade-in hover:-translate-y-1"
               style={{ animationDelay: `${index * 100}ms` }}
             >
               <div className="mb-4 rounded-full bg-red-50 w-12 h-12 flex items-center justify-center">

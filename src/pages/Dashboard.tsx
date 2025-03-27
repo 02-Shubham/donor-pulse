@@ -23,6 +23,9 @@ import { useAuth } from "@/context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { MapPin, Navigation } from "lucide-react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import BloodRequests from "@/components/bloodRequest";
+import DonateButton from "@/components/donateButton";
+// import DonateButton from "@/components/DonateButton";
 
 type BloodRequest = {
   id: string;
@@ -177,6 +180,7 @@ const HospitalLocationDialog = ({ hospital }: { hospital: string }) => {
     )}`;
   };
 
+
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -314,9 +318,11 @@ const Dashboard = () => {
                     {request.status === "pending" && (
                       <>
                         <HospitalLocationDialog hospital={request.hospital} />
-                        <Button size="sm" className="bg-primary hover:bg-primary/90">
-                          Donate
-                        </Button>
+                        <DonateButton 
+                         contactPerson="Shubham Sahu" 
+                         contactNumber="+91 8850502975" 
+                         location="City General Hospital" 
+                        />
                       </>
                     )}
                     {request.status !== "pending" && (
@@ -545,17 +551,7 @@ const Dashboard = () => {
       </div>
 
       <Card>
-        <CardHeader className="flex flex-row items-center justify-between">
-          <div>
-            <CardTitle>Blood Requests</CardTitle>
-            <CardDescription>
-              Manage your hospital's blood requests
-            </CardDescription>
-          </div>
-          <Button className="bg-primary hover:bg-primary/90">
-            Create Request
-          </Button>
-        </CardHeader>
+        <BloodRequests/>
         <CardContent>
           <Table>
             <TableHeader>
@@ -659,7 +655,7 @@ const Dashboard = () => {
           >
             <TabsList className="mb-6 w-full justify-start">
               <TabsTrigger value="donor">Donor Dashboard</TabsTrigger>
-              <TabsTrigger value="recipient">Recipient Dashboard</TabsTrigger>
+              {/* <TabsTrigger value="recipient">Recipient Dashboard</TabsTrigger> */}
               <TabsTrigger value="hospital">Hospital Dashboard</TabsTrigger>
             </TabsList>
             <TabsContent value="donor">{renderDonorDashboard()}</TabsContent>
@@ -678,3 +674,7 @@ const Dashboard = () => {
 };
 
 export default Dashboard;
+function setIsOpen(arg0: boolean): void {
+  throw new Error("Function not implemented.");
+}
+

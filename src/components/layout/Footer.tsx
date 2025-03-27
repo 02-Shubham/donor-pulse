@@ -10,7 +10,7 @@ export const Footer = () => {
         <div className="md:col-span-1">
           <Link to="/" className="flex items-center gap-2 text-xl font-bold text-primary mb-3">
             <DropletIcon className="h-7 w-7" />
-            <span>LifeLink</span>
+            <span>BloodCall</span>
           </Link>
           <p className="text-gray-600 text-sm mt-4 mb-6">
             Connecting blood donors with recipients in need, saving lives one donation at a time.
@@ -100,7 +100,7 @@ export const Footer = () => {
           <ul className="space-y-3">
             <li className="flex items-start space-x-3">
               <Mail className="h-5 w-5 text-primary mt-0.5" />
-              <span className="text-gray-600 text-sm">contact@lifelink.com</span>
+              <span className="text-gray-600 text-sm">contact@BloodCall.com</span>
             </li>
             <li className="flex items-start space-x-3">
               <Phone className="h-5 w-5 text-primary mt-0.5" />
@@ -120,7 +120,7 @@ export const Footer = () => {
       {/* Bottom footer */}
       <div className="max-w-7xl mx-auto pt-8 mt-8 border-t border-gray-200 flex flex-col md:flex-row justify-between items-center">
         <p className="text-gray-500 text-xs">
-          © {new Date().getFullYear()} LifeLink. All rights reserved.
+          © {new Date().getFullYear()} BloodCall. All rights reserved.
         </p>
         <div className="flex space-x-6 mt-4 md:mt-0">
           <a href="#" className="text-gray-500 hover:text-gray-700 text-xs">
