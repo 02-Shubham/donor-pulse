@@ -1,11 +1,13 @@
 
 import React, { createContext, useContext, useState, useEffect } from "react";
+import { authService, UserProfile } from "@/services/auth";
 
 type User = {
   id: string;
   name: string;
   email: string;
   role: "donor" | "recipient" | "hospital";
+  blood_type?: string;
 };
 
 type AuthContextType = {
@@ -23,31 +25,42 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
+  // Load user on initial render
   useEffect(() => {
-    // Check for stored user in localStorage on initial load
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    }
-    setIsLoading(false);
+    const loadUser = async () => {
+      try {
+        const userData = await authService.getCurrentUser();
+        if (userData && userData.profile) {
+          setUser({
+            id: userData.user.id,
+            name: userData.profile.name,
+            email: userData.profile.email,
+            role: userData.profile.role,
+            blood_type: userData.profile.blood_type,
+          });
+        }
+      } catch (error) {
+        console.error("Failed to load user:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadUser();
   }, []);
 
   const login = async (email: string, password: string) => {
     setIsLoading(true);
     try {
-      // Mock login - in a real app this would call your backend API
-      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate API call
+      const { profile } = await authService.login(email, password);
       
-      // Mock user data - in production this would come from your auth provider
-      const mockUser: User = {
-        id: "user123",
-        name: email.split("@")[0], // Use part before @ as name
-        email,
-        role: "donor", // Default role
-      };
-      
-      setUser(mockUser);
-      localStorage.setItem("user", JSON.stringify(mockUser));
+      setUser({
+        id: profile.id,
+        name: profile.name,
+        email: profile.email,
+        role: profile.role,
+        blood_type: profile.blood_type,
+      });
     } catch (error) {
       console.error("Login failed:", error);
       throw new Error("Login failed. Please check your credentials.");
@@ -59,19 +72,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const register = async (userData: Omit<User, "id"> & { password: string }) => {
     setIsLoading(true);
     try {
-      // Mock registration - in a real app this would call your backend API
-      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate API call
-      
-      // Mock user creation
-      const newUser: User = {
-        id: `user_${Date.now()}`,
+      await authService.register(userData.email, userData.password, {
         name: userData.name,
-        email: userData.email,
         role: userData.role,
-      };
+        blood_type: userData.blood_type,
+      });
       
-      setUser(newUser);
-      localStorage.setItem("user", JSON.stringify(newUser));
+      // Login the user after registration
+      await login(userData.email, userData.password);
     } catch (error) {
       console.error("Registration failed:", error);
       throw new Error("Registration failed. Please try again.");
@@ -80,9 +88,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const logout = () => {
-    setUser(null);
-    localStorage.removeItem("user");
+  const logout = async () => {
+    try {
+      await authService.logout();
+      setUser(null);
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
   };
 
   const value = {

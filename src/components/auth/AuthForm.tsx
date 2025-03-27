@@ -47,12 +47,19 @@ export const AuthForm = ({ type }: AuthFormProps) => {
         });
         navigate("/dashboard");
       } else {
+        // Make sure donor has selected a blood type
+        if (userRole === "donor" && !bloodType) {
+          throw new Error("Please select your blood type");
+        }
+        
         await register({
           name,
           email,
           password,
           role: userRole,
+          blood_type: bloodType || undefined,
         });
+        
         toast({
           title: "Account created!",
           description: "Your account has been created successfully.",
