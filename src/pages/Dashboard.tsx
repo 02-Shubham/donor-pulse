@@ -25,9 +25,13 @@ import { MapPin, Navigation } from "lucide-react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import BloodRequests from "@/components/bloodRequest";
 import DonateButton from "@/components/donateButton";
+import BloodTypeCard from "@/components/bloodTypeCard";
 
 import BloodRequestsTable from "@/components/BloodRequestsTable";
 // import DonateButton from "@/components/DonateButton";
+import { ref, get } from "firebase/database";
+import { realtimeDb } from "../lib/firebase"; // Ensure you import the correct database
+
 
 type BloodRequest = {
   id: string;
@@ -238,15 +242,7 @@ const Dashboard = () => {
   const renderDonorDashboard = () => (
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle>Blood Type</CardTitle>
-            <CardDescription>Your registered blood type</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold text-primary">O+</div>
-          </CardContent>
-        </Card>
+      <BloodTypeCard />
         <Card>
           <CardHeader className="pb-2">
             <CardTitle>Donations</CardTitle>

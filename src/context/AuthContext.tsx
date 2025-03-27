@@ -161,6 +161,10 @@ import {
   onAuthStateChanged,
   User as FirebaseUser,
 } from "firebase/auth";
+import { db } from "../lib/firebase"; // Import Firestore Database
+import { ref, set } from "firebase/database";
+import { realtimeDb } from "../lib/firebase";
+
 
 // Define User Type
 type User = {
@@ -168,6 +172,7 @@ type User = {
   name: string;
   email: string;
   role: "donor" | "recipient" | "hospital";
+  bloodType?: string;
 };
 
 type AuthContextType = {
@@ -222,11 +227,23 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   // Register Function
-  const register = async (userData: Omit<User, "id"> & { password: string }) => {
+  const register = async (userData: Omit<User, "id"> & { password: string; bloodType?: string }) => {
     setIsLoading(true);
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, userData.email, userData.password);
-      setUser(mapFirebaseUser(userCredential.user));
+      const newUser = mapFirebaseUser(userCredential.user);
+  
+      if (!newUser) throw new Error("Failed to map user.");
+  
+      // Use realtimeDb instead of db
+      await set(ref(realtimeDb, `users/${newUser.id}`), {
+        name: userData.name,
+        email: userData.email,
+        role: userData.role,
+        bloodType: userData.bloodType || null,
+      });
+  
+      setUser(newUser);
     } catch (error) {
       console.error("Registration failed:", error);
       throw new Error("Failed to register. Please try again.");
@@ -234,7 +251,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setIsLoading(false);
     }
   };
-
   // Logout Function
   const logout = async () => {
     setIsLoading(true);

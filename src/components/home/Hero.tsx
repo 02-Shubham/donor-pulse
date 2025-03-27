@@ -1,5 +1,5 @@
 
-import React from "react";
+import * as React from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Heart, Activity, ChevronRight } from "lucide-react";
@@ -70,17 +70,6 @@ const Hero = () => {
                 className="w-full h-full object-cover"
               />
             </div>
-            
-            {/* Stat Cards */}
-            {/* <div className="absolute -bottom-6 -left-6 glass rounded-lg p-4 shadow-lg animate-pulse-subtle">
-              <p className="text-primary font-bold text-2xl">A+</p>
-              <p className="text-xs text-gray-600">Most needed type</p>
-            </div>
-            
-            <div className="absolute -top-6 -right-6 glass rounded-lg p-4 shadow-lg animate-pulse-subtle">
-              <p className="text-success font-bold text-2xl">15min</p>
-              <p className="text-xs text-gray-600">Average donation time</p>
-            </div> */}
           </div>
         </div>
       </div>

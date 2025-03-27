@@ -283,13 +283,13 @@ export const AuthForm = ({ type }: AuthFormProps) => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-
+  
     try {
       if (type === "login") {
         await login(email, password);
         toast({ title: "Success!", description: "Logged in successfully." });
       } else {
-        await register({email, password, name, role: userRole});
+        await register({ email, password, name, role: userRole, bloodType });
         toast({ title: "Account Created!", description: "Your account has been created." });
       }
       navigate("/dashboard");
@@ -303,6 +303,7 @@ export const AuthForm = ({ type }: AuthFormProps) => {
       setIsLoading(false);
     }
   };
+  
   const bloodTypes = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
 
   function setUserRole(arg0: string): void {

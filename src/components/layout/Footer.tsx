@@ -4,7 +4,7 @@ import { Heart, DropletIcon, Mail, Phone, MapPin } from "lucide-react";
 
 export const Footer = () => {
   return (
-    <footer className="bg-gray-50 border-t border-gray-200/50 pt-12 pb-8 px-6 md:px-10">
+    <footer className="bg-gray-200 border-t border-gray-200/50 pt-12 pb-8 px-6 md:px-10">
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8">
         {/* Logo and description */}
         <div className="md:col-span-1">
@@ -104,13 +104,13 @@ export const Footer = () => {
             </li>
             <li className="flex items-start space-x-3">
               <Phone className="h-5 w-5 text-primary mt-0.5" />
-              <span className="text-gray-600 text-sm">+1 (800) LIFE-LINK</span>
+              <span className="text-gray-600 text-sm">+91 8850502975</span>
             </li>
             <li className="flex items-start space-x-3">
               <MapPin className="h-5 w-5 text-primary mt-0.5" />
               <span className="text-gray-600 text-sm">
-                123 Health Avenue, <br />
-                Medical District, CA 90001
+                CHM College,Ulhasnagar,<br />
+                Mumbai, India
               </span>
             </li>
           </ul>

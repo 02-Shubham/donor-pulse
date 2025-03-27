@@ -8,7 +8,7 @@ import HospitalLocationDialog from "./HospitalLocationDialog";
 import DonateButton from "./donateButton";
 
 const BloodRequestsTable = () => {
-  const [requests, setRequests] = useState([]);
+  const [requests, setRequests] = useState<any[]>([]);
 
   useEffect(() => {
     const requestsRef = ref(database, "bloodRequests");
