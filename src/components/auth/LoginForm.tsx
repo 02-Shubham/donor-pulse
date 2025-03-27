@@ -38,7 +38,7 @@ const LoginForm = () => {
       setErrorMessage(
         error instanceof Error 
           ? error.message 
-          : "Unable to connect to authentication service. Please check your network connection and try again."
+          : "Unable to connect to authentication service. Please try again later."
       );
       toast({
         variant: "destructive",
@@ -53,12 +53,6 @@ const LoginForm = () => {
   const handleDemoLogin = () => {
     setEmail("demo@bloodconnect.com");
     setPassword("demo123456");
-    
-    // Show info toast
-    toast({
-      title: "Demo credentials set",
-      description: "Click Sign In to continue with the demo account.",
-    });
   };
 
   return (
