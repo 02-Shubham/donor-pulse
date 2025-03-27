@@ -39,7 +39,7 @@ const Hero = () => {
                 Become a Donor
               </Button>
             </Link>
-            <Link to="/#how-it-works">
+            <Link to="#how-it-works">
               <Button size="lg" variant="outline" className="gap-2 w-full sm:w-auto">
                 How It Works
                 <ChevronRight className="h-4 w-4" />

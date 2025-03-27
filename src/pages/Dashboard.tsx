@@ -25,6 +25,8 @@ import { MapPin, Navigation } from "lucide-react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import BloodRequests from "@/components/bloodRequest";
 import DonateButton from "@/components/donateButton";
+
+import BloodRequestsTable from "@/components/BloodRequestsTable";
 // import DonateButton from "@/components/DonateButton";
 
 type BloodRequest = {
@@ -231,6 +233,8 @@ const Dashboard = () => {
     return null;
   }
 
+  
+
   const renderDonorDashboard = () => (
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -263,7 +267,7 @@ const Dashboard = () => {
         </Card>
       </div>
 
-      <Card>
+      {/* <Card>
         <CardHeader>
           <CardTitle>Nearby Blood Requests</CardTitle>
           <CardDescription>
@@ -336,7 +340,87 @@ const Dashboard = () => {
             </TableBody>
           </Table>
         </CardContent>
-      </Card>
+      </Card> */}
+      {/* <Card>
+        <CardHeader>
+          <CardTitle>Nearby Blood Requests</CardTitle>
+          <CardDescription>Blood requests from hospitals in your area</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Table>
+            <TableHeader>
+              <TableRow>
+               <TableHead>Date</TableHead>
+               <TableHead>Blood Type</TableHead>
+               <TableHead>Hospital</TableHead>
+               <TableHead>Urgency</TableHead>
+               <TableHead>Status</TableHead>
+               <TableHead className="text-right">Action</TableHead>
+              </TableRow>
+            </TableHeader>
+          <TableBody>
+            {requests.length > 0 ? (
+              requests.map((request) => (
+                <TableRow key={request.id}>
+                  <TableCell>{new Date(request.createdAt).toLocaleDateString()}</TableCell>
+                  <TableCell className="font-medium">{request.bloodType}</TableCell>
+                  <TableCell>{request.hospitalName}</TableCell>
+                  <TableCell>
+                    <Badge
+                      variant={
+                        request.urgency === "emergency"
+                          ? "destructive"
+                          : request.urgency === "urgent"
+                          ? "default"
+                          : "outline"
+                      }
+                    >
+                      {request.urgency}
+                    </Badge>
+                  </TableCell>
+                  <TableCell>
+                    <Badge
+                      variant={
+                        request.status === "fulfilled"
+                          ? "secondary"
+                          : request.status === "pending"
+                          ? "secondary"
+                          : "outline"
+                      }
+                    >
+                      {request.status}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="flex justify-end gap-2">
+                    {request.status === "pending" ? (
+                      <>
+                        <HospitalLocationDialog hospital={request.hospitalName} />
+                        <DonateButton 
+                          contactPerson={request.contactPerson} 
+                          contactNumber={request.contactNumber} 
+                          location={request.hospitalName} 
+                        />
+                      </>
+                    ) : (
+                      <Button size="sm" variant="outline" disabled>
+                        {request.status === "fulfilled" ? "Completed" : "Expired"}
+                      </Button>
+                    )}
+                  </TableCell>
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell colSpan={6} className="text-center text-gray-500">
+                  No blood requests available.
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </CardContent>
+    </Card> */}
+    <BloodRequestsTable />
 
       <Card>
         <CardHeader>
@@ -677,4 +761,3 @@ export default Dashboard;
 function setIsOpen(arg0: boolean): void {
   throw new Error("Function not implemented.");
 }
-

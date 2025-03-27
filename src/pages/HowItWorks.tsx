@@ -1,5 +1,3 @@
-
-import React from "react";
 import { 
   UserPlus, 
   Bell, 
@@ -61,10 +59,10 @@ const HowItWorks = () => {
       <div className="max-w-7xl mx-auto">
         {/* Section Header */}
         <div className="text-center mb-16 max-w-2xl mx-auto">
-          <h2 className="text-4xl md:text-4xl font-bold mb-6 animate-fade-in">
-            How <span className="text-primary">Blood Call</span> Works
+          <h2 className="text-3xl md:text-4xl font-bold mb-6 animate-fade-in">
+            How BloodCall Works
           </h2>
-          <p className="text-grey-600 text-lg animate-fade-in">
+          <p className="text-gray-600 text-lg animate-fade-in">
             Our streamlined process makes blood donation simple, efficient, and rewarding.
           </p>
         </div>

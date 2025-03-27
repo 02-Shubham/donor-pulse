@@ -55,7 +55,7 @@ const Features = () => {
         {/* Section Header */}
         <div className="text-center mb-16 max-w-2xl mx-auto">
           <h2 className="text-3xl md:text-4xl font-bold mb-6 animate-fade-in">
-            Features Designed to Save Lives
+            Features Designed to <span className="text-primary">Save Lives</span>
           </h2>
           <p className="text-gray-600 text-lg animate-fade-in">
             BloodCall combines technology and community to create a seamless blood donation experience.
@@ -67,7 +67,7 @@ const Features = () => {
           {features.map((feature, index) => (
             <div 
               key={index} 
-              className="glass rounded-xl p-6 transition-all duration-300 border-red-600 hover:shadow-md animate-fade-in hover:-translate-y-1"
+              className="glass rounded-xl p-6 transition-all duration-300 hover:shadow-md animate-fade-in hover:-translate-y-1"
               style={{ animationDelay: `${index * 100}ms` }}
             >
               <div className="mb-4 rounded-full bg-red-50 w-12 h-12 flex items-center justify-center">
