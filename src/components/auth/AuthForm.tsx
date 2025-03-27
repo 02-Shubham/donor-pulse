@@ -1,13 +1,14 @@
+
 import { 
   Card, 
   CardContent, 
   CardDescription, 
-  CardFooter, 
   CardHeader, 
   CardTitle 
 } from "@/components/ui/card";
 import LoginForm from "./LoginForm";
 import RegisterForm from "./RegisterForm";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 interface AuthFormProps {
   type: "login" | "register";
@@ -27,11 +28,15 @@ export const AuthForm = ({ type }: AuthFormProps) => {
         </CardDescription>
       </CardHeader>
       <CardContent>
+        {type === "login" && (
+          <Alert className="mb-4 bg-blue-50 text-blue-700 border border-blue-200">
+            <AlertDescription>
+              If you're experiencing connection issues, you can use the demo account option.
+            </AlertDescription>
+          </Alert>
+        )}
         {type === "login" ? <LoginForm /> : <RegisterForm />}
       </CardContent>
-      <CardFooter className="flex flex-col space-y-4">
-        {/* The Footer is now inside the form components */}
-      </CardFooter>
     </Card>
   );
 };

@@ -9,12 +9,14 @@ import { useAuth } from "@/context/AuthContext";
 import SocialLoginButtons from "./SocialLoginButtons";
 import FormFooter from "./FormFooter";
 import { Eye, EyeOff, Mail, Lock } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 const LoginForm = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const { toast } = useToast();
   const { login } = useAuth();
   const navigate = useNavigate();
@@ -22,6 +24,7 @@ const LoginForm = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    setErrorMessage(null);
 
     try {
       await login(email, password);
@@ -31,18 +34,35 @@ const LoginForm = () => {
       });
       navigate("/dashboard");
     } catch (error) {
+      console.error("Login failed:", error);
+      setErrorMessage(
+        error instanceof Error 
+          ? error.message 
+          : "Unable to connect to authentication service. Please try again later."
+      );
       toast({
         variant: "destructive",
-        title: "Error",
-        description: error instanceof Error ? error.message : "An unknown error occurred.",
+        title: "Login failed",
+        description: "Please check your credentials or try again later.",
       });
     } finally {
       setIsLoading(false);
     }
   };
 
+  const handleDemoLogin = () => {
+    setEmail("demo@bloodconnect.com");
+    setPassword("demo123456");
+  };
+
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
+      {errorMessage && (
+        <Alert variant="destructive" className="bg-red-50 text-red-800 border border-red-200">
+          <AlertDescription>{errorMessage}</AlertDescription>
+        </Alert>
+      )}
+      
       <div className="space-y-2">
         <Label htmlFor="email">Email</Label>
         <div className="relative">
@@ -97,6 +117,15 @@ const LoginForm = () => {
             <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
           </div>
         ) : "Sign In"}
+      </Button>
+
+      <Button
+        type="button"
+        variant="outline"
+        className="w-full"
+        onClick={handleDemoLogin}
+      >
+        Use Demo Account
       </Button>
       
       <SocialLoginButtons />
