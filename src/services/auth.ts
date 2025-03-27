@@ -15,52 +15,81 @@ export interface UserProfile {
 export const authService = {
   // Register a new user
   async register(email: string, password: string, userData: Omit<UserProfile, 'id' | 'email'>) {
-    // Register the user with Supabase Auth
-    const { data: authData, error: authError } = await supabase.auth.signUp({
-      email,
-      password,
-    });
-
-    if (authError) throw new Error(authError.message);
+    console.log('Registering user with:', { email, userData });
     
-    if (!authData.user) throw new Error('User registration failed');
-    
-    // Create a profile in the profiles table
-    const { error: profileError } = await supabase
-      .from('profiles')
-      .insert({
-        id: authData.user.id,
+    try {
+      // Register the user with Supabase Auth
+      const { data: authData, error: authError } = await supabase.auth.signUp({
         email,
-        name: userData.name,
-        role: userData.role,
-        blood_type: userData.blood_type,
-        created_at: new Date(),
+        password,
       });
+
+      if (authError) {
+        console.error('Auth error during registration:', authError);
+        throw new Error(authError.message);
+      }
       
-    if (profileError) throw new Error(profileError.message);
-    
-    return authData.user;
+      if (!authData.user) {
+        console.error('User registration failed - no user returned');
+        throw new Error('User registration failed');
+      }
+      
+      // Create a profile in the profiles table
+      const { error: profileError } = await supabase
+        .from('profiles')
+        .insert({
+          id: authData.user.id,
+          email,
+          name: userData.name,
+          role: userData.role,
+          blood_type: userData.blood_type,
+          created_at: new Date(),
+        });
+        
+      if (profileError) {
+        console.error('Profile error during registration:', profileError);
+        throw new Error(profileError.message);
+      }
+      
+      return authData.user;
+    } catch (error) {
+      console.error('Registration failed:', error);
+      throw error;
+    }
   },
   
   // Login an existing user
   async login(email: string, password: string) {
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
+    console.log('Logging in user:', email);
     
-    if (error) throw new Error(error.message);
-    
-    // Get user profile data
-    const { data: profileData, error: profileError } = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('id', data.user.id)
-      .single();
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
       
-    if (profileError) throw new Error(profileError.message);
-    
-    return { user: data.user, profile: profileData };
+      if (error) {
+        console.error('Login error:', error);
+        throw new Error(error.message);
+      }
+      
+      // Get user profile data
+      const { data: profileData, error: profileError } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', data.user.id)
+        .single();
+        
+      if (profileError) {
+        console.error('Profile fetch error:', profileError);
+        throw new Error(profileError.message);
+      }
+      
+      return { user: data.user, profile: profileData };
+    } catch (error) {
+      console.error('Login process failed:', error);
+      throw error;
+    }
   },
   
   // Logout the current user
