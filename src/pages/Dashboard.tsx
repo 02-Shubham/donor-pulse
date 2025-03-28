@@ -32,6 +32,10 @@ import BloodRequestsTable from "@/components/BloodRequestsTable";
 import { ref, get } from "firebase/database";
 import { realtimeDb } from "../lib/firebase"; // Ensure you import the correct database
 
+import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import 'leaflet/dist/leaflet.css';
+import L from 'leaflet';
+
 
 type BloodRequest = {
   id: string;
@@ -175,6 +179,21 @@ const sampleHospitals: HospitalType[] = [
   },
 ];
 
+const bloodCamps = [
+  { id: 1, name: "Central Hospital Blood Bank", lat: 19.2289533, lng: 73.1651312, details: "Available from 9 AM - 5 PM" },
+  { id: 2, name: "Sankalp Blood Bank", lat: 19.4217732, lng: 73.1467634, details: "Open all day" },
+];
+
+const hospitals = [
+  { id: 1, name: "Shree Sanjeevani Hospital", lat: 19.2122840, lng: 73.1685929 },
+  { id: 2, name: "Satya Sai Hospital ", lat: 19.2320468, lng: 73.1578517 },
+];
+
+const customIcon = new L.Icon({
+  iconUrl: 'https://cdn-icons-png.flaticon.com/512/149/149059.png',
+  iconSize: [32, 32],
+});
+
 const HospitalLocationDialog = ({ hospital }: { hospital: string }) => {
   const hospitalData = sampleHospitals.find(h => h.name === hospital);
 
@@ -239,10 +258,230 @@ const Dashboard = () => {
 
   
 
+  // const renderDonorDashboard = () => (
+  //   <div className="space-y-6">
+  //     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+  //     <BloodTypeCard />
+  //       <Card>
+  //         <CardHeader className="pb-2">
+  //           <CardTitle>Donations</CardTitle>
+  //           <CardDescription>Total donations made</CardDescription>
+  //         </CardHeader>
+  //         <CardContent>
+  //           <div className="text-3xl font-bold">{sampleDonations.length}</div>
+  //         </CardContent>
+  //       </Card>
+  //       <Card>
+  //         <CardHeader className="pb-2">
+  //           <CardTitle>Lives Saved</CardTitle>
+  //           <CardDescription>Estimated lives impacted</CardDescription>
+  //         </CardHeader>
+  //         <CardContent>
+  //           <div className="text-3xl font-bold">{sampleDonations.length * 3}</div>
+  //         </CardContent>
+  //       </Card>
+  //     </div>
+
+  //     {/* <Card>
+  //       <CardHeader>
+  //         <CardTitle>Nearby Blood Requests</CardTitle>
+  //         <CardDescription>
+  //           Blood requests from hospitals in your area
+  //         </CardDescription>
+  //       </CardHeader>
+  //       <CardContent>
+  //         <Table>
+  //           <TableHeader>
+  //             <TableRow>
+  //               <TableHead>Date</TableHead>
+  //               <TableHead>Blood Type</TableHead>
+  //               <TableHead>Hospital</TableHead>
+  //               <TableHead>Urgency</TableHead>
+  //               <TableHead>Status</TableHead>
+  //               <TableHead className="text-right">Action</TableHead>
+  //             </TableRow>
+  //           </TableHeader>
+  //           <TableBody>
+  //             {sampleRequests.map((request) => (
+  //               <TableRow key={request.id}>
+  //                 <TableCell>{request.date}</TableCell>
+  //                 <TableCell className="font-medium">{request.bloodType}</TableCell>
+  //                 <TableCell>{request.hospital}</TableCell>
+  //                 <TableCell>
+  //                   <Badge
+  //                     variant={
+  //                       request.urgency === "emergency"
+  //                         ? "destructive"
+  //                         : request.urgency === "urgent"
+  //                         ? "default"
+  //                         : "outline"
+  //                     }
+  //                   >
+  //                     {request.urgency}
+  //                   </Badge>
+  //                 </TableCell>
+  //                 <TableCell>
+  //                   <Badge
+  //                     variant={
+  //                       request.status === "fulfilled"
+  //                         ? "secondary"
+  //                         : request.status === "pending"
+  //                         ? "secondary"
+  //                         : "outline"
+  //                     }
+  //                   >
+  //                     {request.status}
+  //                   </Badge>
+  //                 </TableCell>
+  //                 <TableCell className="flex justify-end gap-2">
+  //                   {request.status === "pending" && (
+  //                     <>
+  //                       <HospitalLocationDialog hospital={request.hospital} />
+  //                       <DonateButton 
+  //                        contactPerson="Shubham Sahu" 
+  //                        contactNumber="+91 8850502975" 
+  //                        location="City General Hospital" 
+  //                       />
+  //                     </>
+  //                   )}
+  //                   {request.status !== "pending" && (
+  //                     <Button size="sm" variant="outline" disabled>
+  //                       {request.status === "fulfilled" ? "Completed" : "Expired"}
+  //                     </Button>
+  //                   )}
+  //                 </TableCell>
+  //               </TableRow>
+  //             ))}
+  //           </TableBody>
+  //         </Table>
+  //       </CardContent>
+  //     </Card> */}
+  //     {/* <Card>
+  //       <CardHeader>
+  //         <CardTitle>Nearby Blood Requests</CardTitle>
+  //         <CardDescription>Blood requests from hospitals in your area</CardDescription>
+  //       </CardHeader>
+  //       <CardContent>
+  //         <Table>
+  //           <TableHeader>
+  //             <TableRow>
+  //              <TableHead>Date</TableHead>
+  //              <TableHead>Blood Type</TableHead>
+  //              <TableHead>Hospital</TableHead>
+  //              <TableHead>Urgency</TableHead>
+  //              <TableHead>Status</TableHead>
+  //              <TableHead className="text-right">Action</TableHead>
+  //             </TableRow>
+  //           </TableHeader>
+  //         <TableBody>
+  //           {requests.length > 0 ? (
+  //             requests.map((request) => (
+  //               <TableRow key={request.id}>
+  //                 <TableCell>{new Date(request.createdAt).toLocaleDateString()}</TableCell>
+  //                 <TableCell className="font-medium">{request.bloodType}</TableCell>
+  //                 <TableCell>{request.hospitalName}</TableCell>
+  //                 <TableCell>
+  //                   <Badge
+  //                     variant={
+  //                       request.urgency === "emergency"
+  //                         ? "destructive"
+  //                         : request.urgency === "urgent"
+  //                         ? "default"
+  //                         : "outline"
+  //                     }
+  //                   >
+  //                     {request.urgency}
+  //                   </Badge>
+  //                 </TableCell>
+  //                 <TableCell>
+  //                   <Badge
+  //                     variant={
+  //                       request.status === "fulfilled"
+  //                         ? "secondary"
+  //                         : request.status === "pending"
+  //                         ? "secondary"
+  //                         : "outline"
+  //                     }
+  //                   >
+  //                     {request.status}
+  //                   </Badge>
+  //                 </TableCell>
+  //                 <TableCell className="flex justify-end gap-2">
+  //                   {request.status === "pending" ? (
+  //                     <>
+  //                       <HospitalLocationDialog hospital={request.hospitalName} />
+  //                       <DonateButton 
+  //                         contactPerson={request.contactPerson} 
+  //                         contactNumber={request.contactNumber} 
+  //                         location={request.hospitalName} 
+  //                       />
+  //                     </>
+  //                   ) : (
+  //                     <Button size="sm" variant="outline" disabled>
+  //                       {request.status === "fulfilled" ? "Completed" : "Expired"}
+  //                     </Button>
+  //                   )}
+  //                 </TableCell>
+  //               </TableRow>
+  //             ))
+  //           ) : (
+  //             <TableRow>
+  //               <TableCell colSpan={6} className="text-center text-gray-500">
+  //                 No blood requests available.
+  //               </TableCell>
+  //             </TableRow>
+  //           )}
+  //         </TableBody>
+  //       </Table>
+  //     </CardContent>
+  //   </Card> */}
+  //   <BloodRequestsTable />
+
+  //     <Card>
+  //       <CardHeader>
+  //         <CardTitle>Donation History</CardTitle>
+  //         <CardDescription>Your previous blood donations</CardDescription>
+  //       </CardHeader>
+  //       <CardContent>
+  //         <Table>
+  //           <TableHeader>
+  //             <TableRow>
+  //               <TableHead>Date</TableHead>
+  //               <TableHead>Hospital</TableHead>
+  //               <TableHead>Blood Type</TableHead>
+  //               <TableHead>Recipient</TableHead>
+  //               <TableHead className="text-right">Certificate</TableHead>
+  //             </TableRow>
+  //           </TableHeader>
+  //           <TableBody>
+  //             {sampleDonations.map((donation) => (
+  //               <TableRow key={donation.id}>
+  //                 <TableCell>{donation.date}</TableCell>
+  //                 <TableCell>{donation.hospital}</TableCell>
+  //                 <TableCell>{donation.bloodType}</TableCell>
+  //                 <TableCell>
+  //                   {donation.recipient || "General Blood Bank"}
+  //                 </TableCell>
+  //                 <TableCell className="text-right">
+  //                   <Button size="sm" variant="outline">
+  //                     Download
+  //                   </Button>
+  //                 </TableCell>
+  //               </TableRow>
+  //             ))}
+  //           </TableBody>
+  //         </Table>
+  //       </CardContent>
+  //     </Card>
+  //   </div>
+  // );
+
   const renderDonorDashboard = () => (
     <div className="space-y-6">
+
+      
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-      <BloodTypeCard />
+        <BloodTypeCard />
         <Card>
           <CardHeader className="pb-2">
             <CardTitle>Donations</CardTitle>
@@ -262,162 +501,48 @@ const Dashboard = () => {
           </CardContent>
         </Card>
       </div>
-
-      {/* <Card>
-        <CardHeader>
-          <CardTitle>Nearby Blood Requests</CardTitle>
-          <CardDescription>
-            Blood requests from hospitals in your area
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Date</TableHead>
-                <TableHead>Blood Type</TableHead>
-                <TableHead>Hospital</TableHead>
-                <TableHead>Urgency</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead className="text-right">Action</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {sampleRequests.map((request) => (
-                <TableRow key={request.id}>
-                  <TableCell>{request.date}</TableCell>
-                  <TableCell className="font-medium">{request.bloodType}</TableCell>
-                  <TableCell>{request.hospital}</TableCell>
-                  <TableCell>
-                    <Badge
-                      variant={
-                        request.urgency === "emergency"
-                          ? "destructive"
-                          : request.urgency === "urgent"
-                          ? "default"
-                          : "outline"
-                      }
-                    >
-                      {request.urgency}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                    <Badge
-                      variant={
-                        request.status === "fulfilled"
-                          ? "secondary"
-                          : request.status === "pending"
-                          ? "secondary"
-                          : "outline"
-                      }
-                    >
-                      {request.status}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="flex justify-end gap-2">
-                    {request.status === "pending" && (
-                      <>
-                        <HospitalLocationDialog hospital={request.hospital} />
-                        <DonateButton 
-                         contactPerson="Shubham Sahu" 
-                         contactNumber="+91 8850502975" 
-                         location="City General Hospital" 
-                        />
-                      </>
-                    )}
-                    {request.status !== "pending" && (
-                      <Button size="sm" variant="outline" disabled>
-                        {request.status === "fulfilled" ? "Completed" : "Expired"}
-                      </Button>
-                    )}
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card> */}
-      {/* <Card>
-        <CardHeader>
-          <CardTitle>Nearby Blood Requests</CardTitle>
-          <CardDescription>Blood requests from hospitals in your area</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-               <TableHead>Date</TableHead>
-               <TableHead>Blood Type</TableHead>
-               <TableHead>Hospital</TableHead>
-               <TableHead>Urgency</TableHead>
-               <TableHead>Status</TableHead>
-               <TableHead className="text-right">Action</TableHead>
-              </TableRow>
-            </TableHeader>
-          <TableBody>
-            {requests.length > 0 ? (
-              requests.map((request) => (
-                <TableRow key={request.id}>
-                  <TableCell>{new Date(request.createdAt).toLocaleDateString()}</TableCell>
-                  <TableCell className="font-medium">{request.bloodType}</TableCell>
-                  <TableCell>{request.hospitalName}</TableCell>
-                  <TableCell>
-                    <Badge
-                      variant={
-                        request.urgency === "emergency"
-                          ? "destructive"
-                          : request.urgency === "urgent"
-                          ? "default"
-                          : "outline"
-                      }
-                    >
-                      {request.urgency}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                    <Badge
-                      variant={
-                        request.status === "fulfilled"
-                          ? "secondary"
-                          : request.status === "pending"
-                          ? "secondary"
-                          : "outline"
-                      }
-                    >
-                      {request.status}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="flex justify-end gap-2">
-                    {request.status === "pending" ? (
-                      <>
-                        <HospitalLocationDialog hospital={request.hospitalName} />
-                        <DonateButton 
-                          contactPerson={request.contactPerson} 
-                          contactNumber={request.contactNumber} 
-                          location={request.hospitalName} 
-                        />
-                      </>
-                    ) : (
-                      <Button size="sm" variant="outline" disabled>
-                        {request.status === "fulfilled" ? "Completed" : "Expired"}
-                      </Button>
-                    )}
-                  </TableCell>
-                </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell colSpan={6} className="text-center text-gray-500">
-                  No blood requests available.
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
-      </CardContent>
-    </Card> */}
-    <BloodRequestsTable />
-
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="h-96 w-full">
+          <MapContainer center={[19.2197984, 73.1643202]} zoom={12} className="h-full w-full rounded-lg">
+            <TileLayer
+              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            />
+            {bloodCamps.map((camp) => (
+              <Marker key={camp.id} position={[camp.lat, camp.lng]} >
+                <Popup>
+                  <strong>{camp.name}</strong>
+                  <br />
+                  {camp.details}
+                </Popup>
+              </Marker>
+            ))}
+            {hospitals.map((hospital) => (
+              <Marker key={hospital.id} position={[hospital.lat, hospital.lng]}>
+                <Popup>
+                  <strong>{hospital.name}</strong>
+                </Popup>
+              </Marker>
+            ))}
+          </MapContainer>
+        </div>
+        <div className="flex flex-col justify-center space-y-4 p-4">
+      <h2 className="text-2xl font-bold text-gray-800">Searching for Blood Donation?</h2>
+      <p className="text-gray-600">Find the nearest blood donation camps and hospitals. Donate blood, save lives!</p>
+      
+      {/* Get Directions Button */}
+      <Button>
+      <a 
+        href={`https://www.google.com/maps/search/hospitals+near+me`} 
+        target="_blank" 
+        rel="noopener noreferrer"
+        className="px-4 py-2 text-white text-lg font-semibold rounded-lg transition"
+      >
+        Get Directions
+      </a>
+      </Button>
+    </div>
+      </div>
+      <BloodRequestsTable />
       <Card>
         <CardHeader>
           <CardTitle>Donation History</CardTitle>
@@ -456,7 +581,7 @@ const Dashboard = () => {
       </Card>
     </div>
   );
-
+  
   const renderRecipientDashboard = () => (
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">

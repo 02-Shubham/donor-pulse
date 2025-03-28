@@ -7,6 +7,7 @@ import {
   Award 
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import Navbar from "@/components/layout/Navbar";
 
 const HowItWorks = () => {
   const steps = [
@@ -55,12 +56,14 @@ const HowItWorks = () => {
   ];
 
   return (
-    <section className="py-20 px-6 md:px-10 bg-gray-50" id="how-it-works">
+    <>
+    <Navbar/>
+     <section className="py-20  mt-30 px-6 md:px-10 bg-gray-50" id="how-it-works">
       <div className="max-w-7xl mx-auto">
         {/* Section Header */}
         <div className="text-center mb-16 max-w-2xl mx-auto">
           <h2 className="text-3xl md:text-4xl font-bold mb-6 animate-fade-in">
-            How BloodCall Works
+            How <span className="text-primary"> BloodCall</span> Works
           </h2>
           <p className="text-gray-600 text-lg animate-fade-in">
             Our streamlined process makes blood donation simple, efficient, and rewarding.
@@ -106,6 +109,7 @@ const HowItWorks = () => {
         </div>
       </div>
     </section>
+    </>
   );
 };
 

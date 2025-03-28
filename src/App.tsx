@@ -11,6 +11,7 @@ import Dashboard from "./pages/Dashboard";
 import NotFound from "./pages/NotFound";
 import { AuthProvider } from "./context/AuthContext";
 import BloodEligibility from "./pages/blood-eligibility";
+import HowItWorks from "./pages/HowItWorks";
 
 const queryClient = new QueryClient();
 
@@ -27,6 +28,8 @@ const App = () => (
             <Route path="/register" element={<Register />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/ai" element={<BloodEligibility/>}/>
+            <Route path="/howitswork" element={<HowItWorks/>}/>
+
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AuthProvider>
