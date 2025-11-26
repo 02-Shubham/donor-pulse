@@ -33,7 +33,7 @@ function HoverCounter({ target }) {
         }
       }}
     >
-      {value.toLocaleString()}+
+      {value.toLocaleString()}
     </span>
   );
 }

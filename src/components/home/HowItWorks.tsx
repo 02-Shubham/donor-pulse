@@ -124,6 +124,7 @@
 // export default HowItWorks;
 import { UserPlus, Bell, Map, Droplet, CheckCircle, Award } from "lucide-react"
 import { cn } from "@/lib/utils"
+import HoverCounter from "@/components/number-hover";
 
 const HowItWorks = () => {
   const steps = [
@@ -226,15 +227,15 @@ const HowItWorks = () => {
           {/* Statistics Section */}
           <div className="mt-20 grid grid-cols-1 md:grid-cols-3 gap-8 animate-fade-in">
             <div className="bg-white rounded-xl p-8 text-center border-2 border-red-100 shadow-sm hover:shadow-md hover:border-red-200 transition-all duration-300">
-              <p className="text-4xl font-bold text-red-600 mb-2">5,000+</p>
+              <p className="text-4xl font-bold text-red-600 mb-2"><HoverCounter target={5000} />+</p>
               <p className="text-gray-600">Registered Donors</p>
             </div>
             <div className="bg-white rounded-xl p-8 text-center border-2 border-red-100 shadow-sm hover:shadow-md hover:border-red-200 transition-all duration-300">
-              <p className="text-4xl font-bold text-red-600 mb-2">10,000+</p>
+              <p className="text-4xl font-bold text-red-600 mb-2"><HoverCounter target={10000} />+</p>
               <p className="text-gray-600">Lives Saved</p>
             </div>
             <div className="bg-white rounded-xl p-8 text-center border-2 border-red-100 shadow-sm hover:shadow-md hover:border-red-200 transition-all duration-300">
-              <p className="text-4xl font-bold text-red-600 mb-2">98%</p>
+              <p className="text-4xl font-bold text-red-600 mb-2"><HoverCounter target={98} />%</p>
               <p className="text-gray-600">Successful Matches</p>
             </div>
           </div>

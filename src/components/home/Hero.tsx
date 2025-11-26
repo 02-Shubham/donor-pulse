@@ -117,11 +117,11 @@ const Hero = () => {
           <div className="mt-8 flex items-center gap-6 text-sm text-gray-500">
             <div className="flex items-center gap-2">
               <div className="w-2 h-2 rounded-full bg-green-500"></div>
-              <span><HoverCounter target={5000} /> Donors</span>
+              <span><HoverCounter target={5000} />+ Donors</span>
             </div>
             <div className="flex items-center gap-2">
               <div className="w-2 h-2 rounded-full bg-primary"></div>
-              <span><HoverCounter target={10000} /> Lives Saved</span>
+              <span><HoverCounter target={10000} />+ Lives Saved</span>
             </div>
           </div>
         </div>
