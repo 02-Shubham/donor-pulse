@@ -27,9 +27,7 @@ const App = () => (
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/ai" element={<BloodEligibility/>}/>
             <Route path="/howitswork" element={<HowItWorks/>}/>
-
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AuthProvider>

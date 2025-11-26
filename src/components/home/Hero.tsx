@@ -2,8 +2,64 @@
 import * as React from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Heart, Activity, ChevronRight } from "lucide-react";
+import { Heart, Activity, ChevronRight,ArrowRight } from "lucide-react";
 import image from "@/public/image.png";
+import HoverCounter from "@/components/number-hover";
+
+const AnimatedCounter = ({
+  targetValue,
+  suffix,
+  isHovered,
+}: {
+  targetValue: number
+  suffix: string
+  isHovered: boolean
+}) => {
+  const [count, setCount] = React.useState(0)
+  const [hasAnimated, setHasAnimated] = React.useState(false)
+
+  React.useEffect(() => {
+    if (isHovered && !hasAnimated) {
+      setHasAnimated(true)
+      const duration = 1500
+      const steps = 60
+      const increment = targetValue / steps
+      const stepDuration = duration / steps
+      let current = 0
+
+      const timer = setInterval(() => {
+        current += increment
+        if (current >= targetValue) {
+          setCount(targetValue)
+          clearInterval(timer)
+        } else {
+          setCount(Math.floor(current))
+        }
+      }, stepDuration)
+
+      return () => clearInterval(timer)
+    }
+  }, [isHovered, hasAnimated, targetValue])
+
+  React.useEffect(() => {
+    if (!isHovered && hasAnimated) {
+      // Reset after mouse leaves so it can animate again
+      const timeout = setTimeout(() => {
+        setCount(0)
+        setHasAnimated(false)
+      }, 500)
+      return () => clearTimeout(timeout)
+    }
+  }, [isHovered, hasAnimated])
+
+  const displayValue = hasAnimated || isHovered ? `${count.toLocaleString()}+` : `${targetValue.toLocaleString()}+`
+
+  return (
+    <span className="font-semibold tabular-nums">
+      {displayValue} {suffix}
+    </span>
+  )
+}
 
 
 const Hero = () => {
@@ -28,9 +84,20 @@ const Hero = () => {
             <span className="text-primary">Save Lives</span>
           </h1>
           
-          <p className="text-gray-600 text-lg md:text-xl mb-8 max-w-lg">
-            BloodCall connects blood donors with hospitals and patients in need. Join our community and help save lives today.
+           <p className="text-gray-600 text-lg md:text-xl mb-8 max-w-lg leading-relaxed">
+            BloodCall connects{" "}
+            <span className="font-semibold text-gray-900 bg-red-100 px-1.5 py-0.5 rounded transition-all duration-300 hover:bg-red-200">
+              blood donors
+            </span>{" "}
+            <span className="inline-flex items-center gap-1 text-red-600 font-medium">
+              <ArrowRight className="h-5 w-5" />
+            </span>{" "}
+            <span className="font-semibold text-gray-900 bg-blue-100 px-1.5 py-0.5 rounded transition-all duration-300 hover:bg-blue-200">
+              hospitals
+            </span>{" "}
+            and patients in need. Join our community and help save lives today.
           </p>
+
           
           <div className="flex flex-col sm:flex-row gap-4">
             <Link to="/register">
@@ -39,7 +106,7 @@ const Hero = () => {
                 Become a Donor
               </Button>
             </Link>
-            <Link to="#how-it-works">
+            <Link to="/howitswork">
               <Button size="lg" variant="outline" className="gap-2 w-full sm:w-auto">
                 How It Works
                 <ChevronRight className="h-4 w-4" />
@@ -49,12 +116,12 @@ const Hero = () => {
           
           <div className="mt-8 flex items-center gap-6 text-sm text-gray-500">
             <div className="flex items-center gap-2">
-              <div className="w-2 h-2 rounded-full bg-success"></div>
-              <span>5,000+ Donors</span>
+              <div className="w-2 h-2 rounded-full bg-green-500"></div>
+              <span><HoverCounter target={5000} /> Donors</span>
             </div>
             <div className="flex items-center gap-2">
               <div className="w-2 h-2 rounded-full bg-primary"></div>
-              <span>10,000+ Lives Saved</span>
+              <span><HoverCounter target={10000} /> Lives Saved</span>
             </div>
           </div>
         </div>

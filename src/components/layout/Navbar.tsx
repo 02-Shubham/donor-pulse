@@ -44,7 +44,6 @@ export const Navbar = () => {
   const navLinks = [
     { name: "Home", path: "/" },
     { name: "How It Works", path: "/howitswork" },
-    { name: "AI-checker", path: "/ai" },
 
     ...(isAuthenticated ? [{ name: "Dashboard", path: "/dashboard" }] : []),
   ];
